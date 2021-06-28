@@ -105,7 +105,7 @@ static int fio_libpmem_file(struct thread_data *td, struct fio_file *f,
 		fdd->libpmem_ptr = NULL;
 	}
 
-	if((fdd->libpmem_ptr = pmem_map_file(f->file_name, length, PMEM_FILE_CREATE, mode, &mapped_len, &is_pmem)) == NULL) {
+	if((fdd->libpmem_ptr = pmem_map_file(f->file_name, 0, PMEM_FILE_CREATE, mode, &mapped_len, &is_pmem)) == NULL) {
 		td_verror(td, errno, pmem_errormsg());
 		goto err;
 	}
@@ -233,7 +233,7 @@ FIO_STATIC struct ioengine_ops ioengine = {
 	.open_file	= fio_libpmem_open_file,
 	.close_file	= fio_libpmem_close_file,
 	.get_file_size	= generic_get_file_size,
-	.prepopulate_file = generic_prepopulate_file,
+	// .prepopulate_file = generic_prepopulate_file,
 	.flags		= FIO_SYNCIO | FIO_RAWIO | FIO_DISKLESSIO | FIO_NOEXTEND |
 				FIO_NODISKUTIL | FIO_BARRIER | FIO_MEMALIGN,
 };

@@ -78,6 +78,17 @@ ifdef CONFIG_LIBISCSI
   ENGINES += libiscsi
 endif
 
+# ifdef CONFIG_NVME
+  nvme_SRCS = engines/nvme.c
+  ENGINES += nvme
+# endif
+
+  ioat_SRCS = engines/ioat.c
+  ENGINES += ioat
+
+  ioat_pmem_SRCS = engines/pmem.c
+  ENGINES += ioat_pmem
+
 ifdef CONFIG_LIBNBD
   nbd_SRCS = engines/nbd.c
   nbd_LIBS = $(LIBNBD_LIBS)
