@@ -127,6 +127,37 @@ static int fio_pmem_init(struct thread_data *td) {
   return ret;
 }
 
+#define FLUSH_ALIGN ((uintptr_t)64)
+
+static void pmem_clflushopt(const void *addr) {
+  asm volatile(".byte 0x66; clflush %0" : "+m"(*(volatile char *)(addr)));
+}
+
+#include <emmintrin.h>
+static void flush_clflush_nolog(const void *addr, size_t len) {
+  uintptr_t uptr;
+
+  /*
+   * Loop through cache-line-size (typically 64B) aligned chunks
+   * covering the given range.
+   */
+  for (uptr = (uintptr_t)addr & ~(FLUSH_ALIGN - 1);
+       uptr < (uintptr_t)addr + len; uptr += FLUSH_ALIGN)
+    _mm_clflush((char *)uptr);
+}
+
+static void flush_clflushopt_nolog(const void *addr, size_t len) {
+  uintptr_t uptr;
+
+  /*
+   * Loop through cache-line-size (typically 64B) aligned chunks
+   * covering the given range.
+   */
+  for (uptr = (uintptr_t)addr & ~(FLUSH_ALIGN - 1);
+       uptr < (uintptr_t)addr + len; uptr += FLUSH_ALIGN)
+    pmem_clflushopt((char *)uptr);
+}
+
 static void pmem_cb(void *opaque, int status) {
   struct pmem_task *pmem_task = (struct pmem_task *)opaque;
   struct fio_pmem *fio_pmem = pmem_task->fio_pmem;
