@@ -122,9 +122,9 @@ endif
 ifdef librpma_fio_SRCS
   SOURCE += $(librpma_fio_SRCS)
 endif
-ifdef CONFIG_POSIXAIO
-  SOURCE += engines/posixaio.c
-endif
+#ifdef CONFIG_POSIXAIO
+#  SOURCE += engines/posixaio.c
+#endif
 ifdef CONFIG_LINUX_FALLOCATE
   SOURCE += engines/falloc.c
 endif
@@ -482,7 +482,7 @@ else
 endif
 prefix = $(INSTALL_PREFIX)
 bindir = $(prefix)/bin
-libdir = $(prefix)/lib/fio
+libdir = $(prefix)/lib
 
 ifeq ($(CONFIG_TARGET_OS), Darwin)
 mandir = /usr/share/man
@@ -590,6 +590,9 @@ t/ieee754: $(T_IEEE_OBJS)
 fio: $(FIO_OBJS)
 	$(QUIET_LINK)$(CC) $(LDFLAGS) -o $@ $(FIO_OBJS) $(LIBS) $(HDFSLIB)
 
+libfio: $(OBJS)
+	ar rcs libfio_static.a $(OBJS)
+
 t/fuzz/fuzz_parseini: $(T_FUZZ_OBJS)
 ifndef LIB_FUZZING_ENGINE
 	$(QUIET_LINK)$(CC) $(LDFLAGS) -o $@ $(T_FUZZ_OBJS) $(LIBS) $(HDFSLIB)
@@ -673,10 +676,11 @@ fulltest:
 install: $(PROGS) $(SCRIPTS) $(ENGS_OBJS) tools/plot/fio2gnuplot.1 FORCE
 	$(INSTALL) -m 755 -d $(DESTDIR)$(bindir)
 	$(INSTALL) $(PROGS) $(SCRIPTS) $(DESTDIR)$(bindir)
-ifdef CONFIG_DYNAMIC_ENGINES
 	$(INSTALL) -m 755 -d $(DESTDIR)$(libdir)
+ifdef CONFIG_DYNAMIC_ENGINES
 	$(INSTALL) -m 755 $(SRCDIR)/engines/*.so $(DESTDIR)$(libdir)
 endif
+	$(INSTALL) -m 755 $(SRCDIR)/*.a $(DESTDIR)$(libdir)
 	$(INSTALL) -m 755 -d $(DESTDIR)$(mandir)/man1
 	$(INSTALL) -m 644 $(SRCDIR)/fio.1 $(DESTDIR)$(mandir)/man1
 	$(INSTALL) -m 644 $(SRCDIR)/tools/fio_generate_plots.1 $(DESTDIR)$(mandir)/man1
