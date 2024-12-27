@@ -5,6 +5,7 @@
  */
 
 
+#include "config-host.h"
 #include "../fio.h"
 #include "../optgroup.h"
 
