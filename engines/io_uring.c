@@ -1207,8 +1207,8 @@ static int fio_ioring_init(struct thread_data *td)
 	int ret, i;
 
 	/* sqthread submission requires registered files */
-	if (o->sqpoll_thread)
-		o->registerfiles = 1;
+//	if (o->sqpoll_thread)
+//		o->registerfiles = 1;
 
 	if (o->registerfiles && td->o.nr_files != td->o.open_files) {
 		log_err("fio: io_uring registered files require nr_files to "
